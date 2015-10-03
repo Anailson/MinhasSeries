@@ -1,0 +1,94 @@
+<resources>
+
+    <!-- Títulos das activitys -->
+    <string name="title_activity_principal">@string/title_principal</string>
+    <string name="title_principal">Minhas Series</string>
+    <string name="title_detalhes_serie">Detalhes da série</string>
+    <string name="title_detalhes_temporada">Detalhes das temporadas</string>
+    <string name="title_detalhes_episodio">Detalhes do episódio</string>
+
+    <!-- Labels / TextView -->
+    <string name="lbl_null">- - - -</string>
+    <string name="lbl_perfil">Perfil</string>
+    <string name="lbl_serie">Series</string>
+    <string name="lbl_sobre">Sobre</string>
+    <string name="lbl_configuracoes">Configurações</string>
+    <string name="lbl_popular">Mais populares</string>
+    <string name="lbl_lancamento">Lançamentos</string>
+    <string name="lbl_favorito">Favoritos</string>
+    <string name="lbl_pesquisa">Pesquisar</string>
+    <string name="lbl_resumo">Resumo:</string>
+    <string name="lbl_ano_lancamento">Lançamento:</string>
+    <string name="lbl_emissora">Emissora:</string>
+    <string name="lbl_temporadas">Temporadas:</string>
+    <string name="lbl_exibicao">Vai ao ar:</string>
+    <string name="lbl_temporada">Temporada:</string>
+    <string name="lbl_episodio">Episodio:</string>
+    <string name="lbl_avaliar">Avalie o episódio:</string>
+    <string name="lbl_nota">Nota o episódio:</string>
+
+    <!-- Buttons -->
+    <string name="btn_adicionar_serie">Adicioanr à lista de favoritos</string>
+    <string name="btn_remover_serie">Remover da lista de favoritos</string>
+    <string name="btn_login">Login</string>btn_cadastrar
+    <string name="btn_novo_cadastro">Cadastre-se</string>
+    <string name="btn_cadastrar">Cadastrar</string>
+    <string name="btn_sair">Sair</string>
+
+    <!-- Menus -->
+    <string name="menu_atualizar">Atualizar</string>
+
+    <!-- Menu lateral (Titulo) -->
+    <string-array name="txt_menu_lateral">
+        <item>@string/lbl_perfil</item>
+        <item>@string/lbl_serie</item>
+        <item>@string/lbl_favorito</item>
+        <item>@string/lbl_configuracoes</item>
+        <item>@string/lbl_sobre</item>
+    </string-array>
+
+    <!-- Menu lateral (Icones) -->
+    <array name="img_menu_lateral">
+        <item>@mipmap/ic_perfil</item>
+        <item>@mipmap/ic_series</item>
+        <item>@mipmap/ic_favoritos</item>
+        <item>@mipmap/ic_configuracoes</item>
+        <item>@mipmap/ic_sobre</item>
+    </array>
+
+    <!-- Hint (EditText) -->
+    <string name="hint_login">Login</string>
+    <string name="hint_senha">Senha</string>
+    <string name="hint_cadastrar_nome">Digite seu nome</string>
+    <string name="hint_cadastrar_login">Digite seu login</string>
+    <string name="hint_cadastrar_senha">Digite sua senha</string>
+
+
+    <!-- Mensagens ao usuario (Toast etc) -->
+    <string name="msg_inserir_unico_fav_sucesso">Já adicionamos sua série na lista de favoritos.</string>
+    <string name="msg_inserir_multi_fav_sucesso">Já adicionamos suas séries na lista de favoritos.</string>
+    <string name="msg_inserir_fav_erro">Poderia conferir se alguma série foi marcada para ser excluída?</string>
+    <string name="msg_inserir_fav_erro_inesperado">msg_inserir_fav_erro_inesperado</string>
+
+    <string name="msg_excluir_unico_fav_sucesso">Você acabou de remover esta série dos seus favoritos.</string>
+    <string name="msg_excluir_multi_fav_sucesso">Você acabou de remover estas séries dos seus favoritos.</string>
+    <string name="msg_excluir_erro">Humm... Você marcou alguma série para ser removida?</string>
+    <string name="msg_excluir_erro_inesperado">msg_excluir_erro_inesperado.</string>
+
+    <string name="msg_baixar_serie_sucesso">Estamos atualizando as informações das séries...</string>
+    <string name="msg_efeturar_login_sucesso">Vejamos se seus dados informados conferem...</string>
+
+    <string name="msg_login_sucesso">Você acabou de se conectar.</string>
+    <string name="msg_login_falha">Bem... os dados informados parecem estar incorretos.</string>
+    <string name="msg_sem_conexao">Poderia verificar sua conexão com a Internet? Parece que ela não está bem...</string>
+
+    <string name="title_activity_tela_configuracoes">TelaConfiguracoes</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_tela_cadastrar">Cadastrar</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>

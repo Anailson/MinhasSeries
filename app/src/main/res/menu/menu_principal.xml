@@ -1,0 +1,10 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".TelaPrincipal">
+
+    <item
+        android:id="@+id/menuAtualizar"
+        android:title="@string/menu_atualizar"
+        android:orderInCategory="2"/>
+</menu>
