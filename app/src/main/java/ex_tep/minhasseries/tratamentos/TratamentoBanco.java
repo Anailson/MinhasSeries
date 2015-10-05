@@ -1,7 +1,6 @@
 package ex_tep.minhasseries.tratamentos;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,12 +206,13 @@ public class TratamentoBanco {
 
     public static void atualizarAlterado(boolean flag){
 
-        Log.e("atualizarAlterado()", flag + "" );
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
         List<Episodio> episodios = realm.where(Episodio.class).equalTo(NOTA_ALTERADA, !flag).findAll();
+
         for(int i = 0; i < episodios.size(); i++){
+
             Episodio e = episodios.get(i);
             e.setNotaAlterada(flag);
             realm.copyToRealmOrUpdate(e);

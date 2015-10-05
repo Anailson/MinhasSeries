@@ -37,6 +37,7 @@ import static ex_tep.minhasseries.Constantes.ATUALIZAR_SERIES;
 import static ex_tep.minhasseries.Constantes.ATUALIZAR_WEB_SERVICE;
 import static ex_tep.minhasseries.Constantes.BAIXAR_SERIES;
 import static ex_tep.minhasseries.Constantes.CONFIGURAOES;
+import static ex_tep.minhasseries.Constantes.FAVORITO;
 import static ex_tep.minhasseries.Constantes.FAVORITOS;
 import static ex_tep.minhasseries.Constantes.FAVORITO_NAO;
 import static ex_tep.minhasseries.Constantes.FAVORITO_SIM;
@@ -150,10 +151,17 @@ public class TelaPrincipal extends ActionBarActivity {
         List idSeries = TratamentoBanco.buscarIds(Serie.class, NOTA_ALTERADA, true);
         List idTemporadas = TratamentoBanco.buscarIds(Temporada.class, NOTA_ALTERADA, true);
         List idEpisodios = TratamentoBanco.buscarIds(Episodio.class, NOTA_ALTERADA, true);
+        List idFavoritos = TratamentoBanco.buscarIds(Serie.class, FAVORITO, FAVORITO_SIM);
 
         WebServerAsync serverAsync = new WebServerAsync(this);
+
         serverAsync.setOperacao(ATUALIZAR_WEB_SERVICE);
-        serverAsync.execute(idSeries, idTemporadas, idEpisodios);
+        serverAsync.setIdSeries(idSeries);
+        serverAsync.setIdTemporadas(idTemporadas);
+        serverAsync.setIdEpisodios(idEpisodios);
+        serverAsync.setIdFavoritos(idFavoritos);
+        serverAsync.execute();
+
         super.onBackPressed();
     }
 
@@ -242,18 +250,39 @@ public class TelaPrincipal extends ActionBarActivity {
         }
     }
 
-    private class WebServerAsync extends AsyncTask<Object, Void, Void> {
+    private class WebServerAsync extends AsyncTask<Void, Void, Void> {
 
         private int operacao;
         private ProgressDialog pDialog;
         private Context context;
+        private List<Integer> idSeries, idTemporadas, idEpisodios, idFavoritos;
 
         private WebServerAsync(Context context) {
             this.context = context;
+            this.idSeries = new ArrayList<>();
+            this.idTemporadas = new ArrayList<>();
+            this.idEpisodios = new ArrayList<>();
+            this.idFavoritos = new ArrayList<>();
         }
 
         public void setOperacao(int operacao){
             this.operacao = operacao;
+        }
+
+        public void setIdSeries(List<Integer> idSeries) {
+            this.idSeries = idSeries;
+        }
+
+        public void setIdTemporadas(List<Integer> idTemporadas) {
+            this.idTemporadas = idTemporadas;
+        }
+
+        public void setIdEpisodios(List<Integer> idEpisodios) {
+            this.idEpisodios = idEpisodios;
+        }
+
+        public void setIdFavoritos(List<Integer> idFavoritos) {
+            this.idFavoritos = idFavoritos;
         }
 
         @Override
@@ -270,7 +299,7 @@ public class TelaPrincipal extends ActionBarActivity {
         }
 
         @Override
-        protected Void doInBackground(Object... objs) {
+        protected Void doInBackground(Void... voids) {
 
             switch (operacao){
 
@@ -281,17 +310,14 @@ public class TelaPrincipal extends ActionBarActivity {
                     if (u.isLogado()){
                         TratamentoJSON.atualizarSeries();
                     } else {
-                        TratamentoJSON.buscarSeries();
+                        TratamentoJSON.baixarDadosWebService();
                         TratamentoBanco.logar();
                     }
                 break;
 
                 case ATUALIZAR_WEB_SERVICE:
 
-                    TratamentoJSON.atualizarWebService(Serie.class, (List) objs[0]);
-                    TratamentoJSON.atualizarWebService(Temporada.class, (List) objs[1]);
-                    TratamentoJSON.atualizarWebService(Episodio.class, (List) objs[2]);
-
+                    TratamentoJSON.atualizarWebService(idSeries, idTemporadas, idEpisodios, idFavoritos);
                     TratamentoBanco.atualizarAlterado(false);
                 break;
 
@@ -316,7 +342,6 @@ public class TelaPrincipal extends ActionBarActivity {
             if (pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-            Log.e("onPostExecute(Void)", "FINALIZADO");
         }
     }
 }

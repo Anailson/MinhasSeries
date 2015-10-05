@@ -20,6 +20,7 @@ import io.realm.RealmList;
 import static ex_tep.minhasseries.Constantes.ANO;
 import static ex_tep.minhasseries.Constantes.DIA;
 import static ex_tep.minhasseries.Constantes.EMISSORA;
+import static ex_tep.minhasseries.Constantes.FAV_ID;
 import static ex_tep.minhasseries.Constantes.HORARIO;
 import static ex_tep.minhasseries.Constantes.ID;
 import static ex_tep.minhasseries.Constantes.LOGIN;
@@ -35,6 +36,7 @@ import static ex_tep.minhasseries.Constantes.URL_BUSCAR;
 import static ex_tep.minhasseries.Constantes.URL_EDITAR;
 import static ex_tep.minhasseries.Constantes.URL_EPISODIO;
 import static ex_tep.minhasseries.Constantes.URL_FAVORITO;
+import static ex_tep.minhasseries.Constantes.URL_REMOVER;
 import static ex_tep.minhasseries.Constantes.URL_SALVAR;
 import static ex_tep.minhasseries.Constantes.URL_SERIE;
 import static ex_tep.minhasseries.Constantes.URL_TEMPORADA;
@@ -44,7 +46,8 @@ import static ex_tep.minhasseries.Constantes.USU_ID;
 
 public class TratamentoJSON {
 
-    private TratamentoJSON (){}
+    private TratamentoJSON() {
+    }
 
     public static void cadastrar(Usuario u) {
 
@@ -89,7 +92,7 @@ public class TratamentoJSON {
 
     }
 
-    public static void buscarSeries() {
+    public static void baixarDadosWebService() {
 
         JSONArray seriesJSON = buscarJSONArray(URL_SERIE);
         JSONArray idsJSON = buscarJSONArray(URL_FAVORITO);
@@ -131,35 +134,17 @@ public class TratamentoJSON {
         TratamentoBanco.salvar(series);
     }
 
-    public static void atualizarWebService(Class cls, List<Integer> lista) {
+    public static void atualizarWebService(List<Integer> idsSer, List<Integer> idsTemp, List<Integer> idsEpi, List<Integer> idsFav ) {
 
-       if (Serie.class.equals (cls)){
+        atualizarDados(Serie.class, idsSer);
+        atualizarDados(Temporada.class, idsTemp);
+        atualizarDados(Episodio.class, idsEpi);
 
-            Log.e("atualizarWebService", "Serie - SIZE: " + lista.size());
-            for(int i = 0; i < lista.size(); i++){
-                int id = lista.get(i);
-                Serie s = (Serie) TratamentoBanco.buscar(cls, id);
-                enviarDadosWebService(s);
-            }
+        JSONArray idsFavWeb = buscarJSONArray(URL_FAVORITO);
+        int idUsuario = ((Usuario) TratamentoBanco.buscar(Usuario.class)).getId();
 
-       } else if (Temporada.class.equals(cls)){
-
-            Log.e("atualizarWebService", "TEMP - SIZE: " + lista.size());
-            for(int i = 0; i < lista.size(); i++){
-                int id = lista.get(i);
-                Temporada t = (Temporada) TratamentoBanco.buscar(cls, id);
-                enviarDadosWebService(t);
-            }
-
-       } else if (Episodio.class.equals (cls)){
-
-            Log.e("atualizarWebService", "EPI - SIZE: " + lista.size());
-            for(int i = 0; i < lista.size(); i++){
-                int id = lista.get(i);
-                Episodio e = (Episodio) TratamentoBanco.buscar(cls, id);
-                enviarDadosWebService(e);
-            }
-       }
+        removerFavoritos(idUsuario, idsFavWeb, idsFav);
+        adicionarFavoritos(idUsuario, getIdFavoritos(idsFavWeb), idsFav);
     }
 
     private static RealmList<Temporada> converteJsonTemporadas(int idSerie) throws JSONException {
@@ -254,65 +239,142 @@ public class TratamentoJSON {
         return null;
     }
 
-    private static void enviarDadosWebService(Object obj){
+    private static void atualizarDados(Class cls, List<Integer> lista){
+
+        if(Serie.class.equals(cls)){
+
+            for (Integer id : lista) {
+                Serie s = (Serie) TratamentoBanco.buscar(cls, id);
+                atualizarDados(s);
+            }
+
+        } else if(Temporada.class.equals(cls)){
+
+            for (Integer id : lista) {
+                Temporada t = (Temporada) TratamentoBanco.buscar(cls, id);
+                atualizarDados(t);
+            }
+
+        } else if(Episodio.class.equals(cls)){
+
+            for (Integer id : lista) {
+                Episodio e = (Episodio) TratamentoBanco.buscar(cls, id);
+                atualizarDados(e);
+            }
+
+        } else if(Usuario.class.equals(cls)){
+            Usuario u = (Usuario) TratamentoBanco.buscar(cls);
+            atualizarDados(u);
+        }
+    }
+
+    private static void atualizarDados (Usuario u){
+        String url = URL_WEBSERVICE;
+        List<NameValuePair> parametros = new ArrayList<>();
+
+        parametros.add(new BasicNameValuePair(ID, u.getId() + ""));
+        parametros.add(new BasicNameValuePair(NOME, u.getNome() + ""));
+        parametros.add(new BasicNameValuePair(SENHA, u.getSenha() + ""));
+        parametros.add(new BasicNameValuePair(LOGIN, u.getLogin() + ""));
+
+        url += URL_USUARIO + URL_EDITAR + u.getId();
+
+        TratamentoWebService.makeServiceCall(url, TratamentoWebService.PUT, parametros, TratamentoWebService.JSON);
+    }
+
+    private static void atualizarDados(Serie s){
 
         String url = URL_WEBSERVICE;
         List<NameValuePair> parametros = new ArrayList<>();
 
-        if (obj instanceof Episodio){
+        parametros.add(new BasicNameValuePair(ID, s.getId() + ""));
+        parametros.add(new BasicNameValuePair(TITULO, s.getTitulo()));
+        parametros.add(new BasicNameValuePair(NOTA, s.getNota() + ""));
+        parametros.add(new BasicNameValuePair(RESUMO, s.getResumo()));
+        parametros.add(new BasicNameValuePair(EMISSORA, s.getEmissora()));
+        parametros.add(new BasicNameValuePair(ANO, s.getAno() + ""));
 
-            Episodio e = (Episodio) obj;
-
-            parametros.add(new BasicNameValuePair(ID, e.getId() + ""));
-            parametros.add(new BasicNameValuePair(NUMERO, e.getNumero() + ""));
-            parametros.add(new BasicNameValuePair(TITULO, e.getTitulo()));
-            parametros.add(new BasicNameValuePair(NOTA, e.getNota() + ""));
-            parametros.add(new BasicNameValuePair(RESUMO, e.getResumo()));
-            parametros.add(new BasicNameValuePair(DIA, e.getDia()));
-            parametros.add(new BasicNameValuePair(HORARIO, e.getHorario()));
-            parametros.add(new BasicNameValuePair(TEMP_ID, e.getTempId() + ""));
-
-            url += URL_EPISODIO + URL_EDITAR + e.getId();
-
-        } else if (obj instanceof Temporada){
-
-            Temporada t = (Temporada) obj;
-
-            parametros.add(new BasicNameValuePair(ID, t.getId() + ""));
-            parametros.add(new BasicNameValuePair(NUMERO, t.getNumero() + ""));
-            parametros.add(new BasicNameValuePair(NOTA, t.getNota() + ""));
-            parametros.add(new BasicNameValuePair(RESUMO, t.getResumo()));
-            parametros.add(new BasicNameValuePair(ANO, t.getAno() + ""));
-            parametros.add(new BasicNameValuePair(SER_ID, t.getSerId() + ""));
-
-            url += URL_TEMPORADA + URL_EDITAR + t.getId();
-
-        } else if (obj instanceof Serie){
-
-            Serie s = (Serie) obj;
-
-            parametros.add(new BasicNameValuePair(ID, s.getId() + ""));
-            parametros.add(new BasicNameValuePair(TITULO, s.getTitulo()));
-            parametros.add(new BasicNameValuePair(NOTA, s.getNota() + ""));
-            parametros.add(new BasicNameValuePair(RESUMO, s.getResumo()));
-            parametros.add(new BasicNameValuePair(EMISSORA, s.getEmissora()));
-            parametros.add(new BasicNameValuePair(ANO, s.getAno() + ""));
-
-            url += URL_SERIE + URL_EDITAR + s.getId();
-
-        } else if (obj instanceof Usuario){
-
-            Usuario u = (Usuario) obj;
-
-            parametros.add(new BasicNameValuePair(ID, u.getId() + ""));
-            parametros.add(new BasicNameValuePair(NOME, u.getNome() + ""));
-            parametros.add(new BasicNameValuePair(SENHA, u.getSenha() + ""));
-            parametros.add(new BasicNameValuePair(LOGIN, u.getLogin() + ""));
-
-            url += URL_USUARIO + URL_EDITAR + u.getId();
-        }
+        url += URL_SERIE + URL_EDITAR + s.getId();
 
         String log = TratamentoWebService.makeServiceCall(url, TratamentoWebService.PUT, parametros, TratamentoWebService.JSON);
         Log.e("atualizarWebService", "Log: " + log);
+    }
+
+    private static void atualizarDados(Temporada t){
+
+        String url = URL_WEBSERVICE;
+        List<NameValuePair> parametros = new ArrayList<>();
+
+        parametros.add(new BasicNameValuePair(ID, t.getId() + ""));
+        parametros.add(new BasicNameValuePair(NUMERO, t.getNumero() + ""));
+        parametros.add(new BasicNameValuePair(NOTA, t.getNota() + ""));
+        parametros.add(new BasicNameValuePair(RESUMO, t.getResumo()));
+        parametros.add(new BasicNameValuePair(ANO, t.getAno() + ""));
+        parametros.add(new BasicNameValuePair(SER_ID, t.getSerId() + ""));
+
+        url += URL_TEMPORADA + URL_EDITAR + t.getId();
+
+        String log = TratamentoWebService.makeServiceCall(url, TratamentoWebService.PUT, parametros, TratamentoWebService.JSON);
+        Log.e("atualizarWebService", "Log: " + log);
+    }
+
+    private static void atualizarDados(Episodio e){
+
+        String url = URL_WEBSERVICE;
+        List<NameValuePair> parametros = new ArrayList<>();
+
+        parametros.add(new BasicNameValuePair(ID, e.getId() + ""));
+        parametros.add(new BasicNameValuePair(NUMERO, e.getNumero() + ""));
+        parametros.add(new BasicNameValuePair(TITULO, e.getTitulo()));
+        parametros.add(new BasicNameValuePair(NOTA, e.getNota() + ""));
+        parametros.add(new BasicNameValuePair(RESUMO, e.getResumo()));
+        parametros.add(new BasicNameValuePair(DIA, e.getDia()));
+        parametros.add(new BasicNameValuePair(HORARIO, e.getHorario()));
+        parametros.add(new BasicNameValuePair(TEMP_ID, e.getTempId() + ""));
+
+        url += URL_EPISODIO + URL_EDITAR + e.getId();
+
+        String log = TratamentoWebService.makeServiceCall(url, TratamentoWebService.PUT, parametros, TratamentoWebService.JSON);
+        Log.e("atualizarWebService", "Log: " + log);
+    }
+
+    private static void removerFavoritos(int idUsuario, JSONArray idsFavWeb, List<Integer> idsFavBanco) {
+
+        String url = URL_WEBSERVICE + URL_FAVORITO + URL_REMOVER;
+
+        try {
+            for (int i = 0; i < idsFavWeb.length(); i++) {
+
+                JSONObject jsonObject = idsFavWeb.getJSONObject(i);
+                int favId = jsonObject.getInt(FAV_ID);
+                int usuId = jsonObject.getInt(USU_ID);
+                int serId = jsonObject.getInt(SER_ID);
+
+                if((idUsuario == usuId) && (!idsFavBanco.contains(serId))){
+
+                    TratamentoWebService.makeServiceCall(url + favId, TratamentoWebService.DELETE);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void adicionarFavoritos(int idUsuario, List<Integer> idsFavWeb, List<Integer> idsFavBanco) {
+
+        String url = URL_WEBSERVICE + URL_FAVORITO + URL_SALVAR;
+
+        for(Integer idSerie : idsFavBanco){
+
+            if(!idsFavWeb.contains(idSerie)){
+
+                List<NameValuePair> parametros = new ArrayList<>();
+                parametros.add(new BasicNameValuePair(USU_ID, idUsuario + ""));
+                parametros.add(new BasicNameValuePair(SER_ID, idSerie + ""));
+
+                TratamentoWebService.makeServiceCall(url, TratamentoWebService.POST, parametros, TratamentoWebService.JSON);
+            }
+        }
     }
 }

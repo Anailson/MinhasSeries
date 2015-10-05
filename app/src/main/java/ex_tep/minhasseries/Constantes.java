@@ -6,7 +6,7 @@ package ex_tep.minhasseries;
  */
 public final class Constantes {
 
-    // Parâmetros usados para manipular as listas
+    // Parâmetros usados para manipular as listas da TelaPrincipal
     public static final int PERFIL = 0;
     public static final int SERIES = 1;
     public static final int FAVORITOS = 2;
@@ -14,7 +14,7 @@ public final class Constantes {
     public static final int SOBRE = 4;
 
     //URL para acessar o Web Service
-    public static final String URL_WEBSERVICE = "http://192.168.0.103:8080/WebServer/webresources/";
+    public static final String URL_WEBSERVICE = "http://192.168.0.100:8080/WebServer/webresources/";
     //public static final String URL_WEBSERVICE = "http://10.13.157.161:8080/WebServer/webresources/";
     //public static final String URL_WEBSERVICE = "http://10.0.2.2:8080/WebServer/webresources/";
     public static final String URL_USUARIO = "tabelas.tbusuario/";
@@ -25,6 +25,7 @@ public final class Constantes {
     public static final String URL_BUSCAR = "buscar/";
     public static final String URL_SALVAR = "salvar/";
     public static final String URL_EDITAR = "editar/";
+    public static final String URL_REMOVER = "remover/";
 
     // Parâmetros de tratamento do JSON
     public static final String EPISODIO = "episodio";
@@ -44,9 +45,10 @@ public final class Constantes {
     public static final String SENHA = "senha";
     public static final String NOME = "nome";
     public static final String NOTA_ALTERADA = "notaAlterada";
+    public static final String FAV_ID = "favId";
     public static final String USU_ID = "usuId";
-    public static final String TEMP_ID = "tempId";
     public static final String SER_ID = "serId";
+    public static final String TEMP_ID = "tempId";
 
     // Parâmetro usado para verificar se o usuário já realizou algum login
     public static final int SEM_CONEXAO = 0;
