@@ -3,6 +3,7 @@ package ex_tep.minhasseries.telas;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -34,11 +35,11 @@ public class TelaFavorito extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View viewLancamento = inflater.inflate(R.layout.frag_favorito, container, false);
+        View viewFavoritos = inflater.inflate(R.layout.frag_favorito, container, false);
 
         series = TratamentoBanco.buscarSeries(FAVORITO_SIM);
-        lvwFavorito = (ListView) viewLancamento.findViewById(R.id.lvw_favorito);
-        btnRemoverFavorito = (Button) viewLancamento.findViewById(R.id.btn_remover_serie);
+        lvwFavorito = (ListView) viewFavoritos.findViewById(R.id.lvw_favorito);
+        btnRemoverFavorito = (Button) viewFavoritos.findViewById(R.id.btn_remover_serie);
 
         lvwFavorito.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -80,12 +81,13 @@ public class TelaFavorito extends Fragment {
         });
 
         registerForContextMenu(lvwFavorito);
-        return viewLancamento;
+        return viewFavoritos;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.e("TELA_FAVORITOS", "ON_RESUME()");
         series = TratamentoBanco.buscarSeries(FAVORITO_SIM);
         lvwFavorito.setAdapter(new AdaptadorListaFavorito(this.getActivity(), series));
     }

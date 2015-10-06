@@ -11,11 +11,11 @@
     <string name="lbl_null">- - - -</string>
     <string name="lbl_perfil">Perfil</string>
     <string name="lbl_serie">Series</string>
-    <string name="lbl_sobre">Sobre</string>
-    <string name="lbl_configuracoes">Configurações</string>
-    <string name="lbl_popular">Mais populares</string>
-    <string name="lbl_lancamento">Lançamentos</string>
     <string name="lbl_favorito">Favoritos</string>
+    <string name="lbl_configuracoes">Configurações</string>
+    <string name="lbl_sobre">Sobre</string>
+    <!--<string name="lbl_popular">Mais populares</string>
+    <string name="lbl_lancamento">Lançamentos</string>-->
     <string name="lbl_pesquisa">Pesquisar</string>
     <string name="lbl_resumo">Resumo:</string>
     <string name="lbl_ano_lancamento">Lançamento:</string>

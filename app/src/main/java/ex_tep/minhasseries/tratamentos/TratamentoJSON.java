@@ -88,7 +88,42 @@ public class TratamentoJSON {
         return false;
     }
 
-    public static void atualizarSeries() {
+    public static void atualizarSeries(List<Integer> idSeries) {
+
+        JSONArray jsonSeries = buscarJSONArray(URL_SERIE);
+        List<Serie> series = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < jsonSeries.length(); i++) {
+
+                JSONObject jsonObject = jsonSeries.getJSONObject(i);
+                int serId = jsonObject.getInt(ID);
+
+                if(!idSeries.contains(serId) ){
+                    Serie serie = new Serie();
+
+                    Log.e("atualizarSeries(List)", SER_ID + " " + serId);
+
+                    serie.setId(serId);
+                    serie.setTitulo(jsonObject.getString(TITULO));
+                    serie.setNota(Float.parseFloat(jsonObject.getString(NOTA)));
+                    serie.setResumo(jsonObject.getString(RESUMO));
+                    serie.setEmissora(jsonObject.getString(EMISSORA));
+                    serie.setAno(jsonObject.getInt(ANO));
+                    serie.setFavorito(false);
+                    serie.setNotaAlterada(false);
+                    serie.setMarcado(false);
+                    serie.setTemporadas(converteJsonTemporadas(serId));
+
+                    series.add(serie);
+                }
+            }
+
+            TratamentoBanco.salvar(series);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -134,7 +169,7 @@ public class TratamentoJSON {
         TratamentoBanco.salvar(series);
     }
 
-    public static void atualizarWebService(List<Integer> idsSer, List<Integer> idsTemp, List<Integer> idsEpi, List<Integer> idsFav ) {
+    public static void atualizarWebService(List<Integer> idsSer, List<Integer> idsTemp, List<Integer> idsEpi, List<Integer> idsFav) {
 
         atualizarDados(Serie.class, idsSer);
         atualizarDados(Temporada.class, idsTemp);
@@ -145,6 +180,8 @@ public class TratamentoJSON {
 
         removerFavoritos(idUsuario, idsFavWeb, idsFav);
         adicionarFavoritos(idUsuario, getIdFavoritos(idsFavWeb), idsFav);
+
+        TratamentoBanco.atualizarAlterado(false);
     }
 
     private static RealmList<Temporada> converteJsonTemporadas(int idSerie) throws JSONException {
@@ -239,36 +276,36 @@ public class TratamentoJSON {
         return null;
     }
 
-    private static void atualizarDados(Class cls, List<Integer> lista){
+    private static void atualizarDados(Class cls, List<Integer> lista) {
 
-        if(Serie.class.equals(cls)){
+        if (Serie.class.equals(cls)) {
 
             for (Integer id : lista) {
                 Serie s = (Serie) TratamentoBanco.buscar(cls, id);
                 atualizarDados(s);
             }
 
-        } else if(Temporada.class.equals(cls)){
+        } else if (Temporada.class.equals(cls)) {
 
             for (Integer id : lista) {
                 Temporada t = (Temporada) TratamentoBanco.buscar(cls, id);
                 atualizarDados(t);
             }
 
-        } else if(Episodio.class.equals(cls)){
+        } else if (Episodio.class.equals(cls)) {
 
             for (Integer id : lista) {
                 Episodio e = (Episodio) TratamentoBanco.buscar(cls, id);
                 atualizarDados(e);
             }
 
-        } else if(Usuario.class.equals(cls)){
+        } else if (Usuario.class.equals(cls)) {
             Usuario u = (Usuario) TratamentoBanco.buscar(cls);
             atualizarDados(u);
         }
     }
 
-    private static void atualizarDados (Usuario u){
+    private static void atualizarDados(Usuario u) {
         String url = URL_WEBSERVICE;
         List<NameValuePair> parametros = new ArrayList<>();
 
@@ -282,7 +319,7 @@ public class TratamentoJSON {
         TratamentoWebService.makeServiceCall(url, TratamentoWebService.PUT, parametros, TratamentoWebService.JSON);
     }
 
-    private static void atualizarDados(Serie s){
+    private static void atualizarDados(Serie s) {
 
         String url = URL_WEBSERVICE;
         List<NameValuePair> parametros = new ArrayList<>();
@@ -300,7 +337,7 @@ public class TratamentoJSON {
         Log.e("atualizarWebService", "Log: " + log);
     }
 
-    private static void atualizarDados(Temporada t){
+    private static void atualizarDados(Temporada t) {
 
         String url = URL_WEBSERVICE;
         List<NameValuePair> parametros = new ArrayList<>();
@@ -318,7 +355,7 @@ public class TratamentoJSON {
         Log.e("atualizarWebService", "Log: " + log);
     }
 
-    private static void atualizarDados(Episodio e){
+    private static void atualizarDados(Episodio e) {
 
         String url = URL_WEBSERVICE;
         List<NameValuePair> parametros = new ArrayList<>();
@@ -350,7 +387,7 @@ public class TratamentoJSON {
                 int usuId = jsonObject.getInt(USU_ID);
                 int serId = jsonObject.getInt(SER_ID);
 
-                if((idUsuario == usuId) && (!idsFavBanco.contains(serId))){
+                if ((idUsuario == usuId) && (!idsFavBanco.contains(serId))) {
 
                     TratamentoWebService.makeServiceCall(url + favId, TratamentoWebService.DELETE);
                 }
@@ -365,9 +402,9 @@ public class TratamentoJSON {
 
         String url = URL_WEBSERVICE + URL_FAVORITO + URL_SALVAR;
 
-        for(Integer idSerie : idsFavBanco){
+        for (Integer idSerie : idsFavBanco) {
 
-            if(!idsFavWeb.contains(idSerie)){
+            if (!idsFavWeb.contains(idSerie)) {
 
                 List<NameValuePair> parametros = new ArrayList<>();
                 parametros.add(new BasicNameValuePair(USU_ID, idUsuario + ""));

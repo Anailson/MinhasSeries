@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -99,7 +98,6 @@ public class TelaPrincipal extends ActionBarActivity {
             WebServerAsync webAsync = new WebServerAsync(this);
             webAsync.setOperacao(BAIXAR_SERIES);
             webAsync.execute();
-            getSupportActionBar().setTitle(tituloMenu);
         }
     }
 
@@ -127,7 +125,18 @@ public class TelaPrincipal extends ActionBarActivity {
 
         switch (item.getItemId()) {
             case R.id.menuAtualizar:
-                Toast.makeText(this, "Atualizar", Toast.LENGTH_SHORT).show();
+
+                List idSerAlterada = TratamentoBanco.buscarIds(Serie.class, NOTA_ALTERADA, true);
+                List idTempAlterada= TratamentoBanco.buscarIds(Temporada.class, NOTA_ALTERADA, true);
+                List idEpiAlterada= TratamentoBanco.buscarIds(Episodio.class, NOTA_ALTERADA, true);
+                List idFavoritos = TratamentoBanco.buscarIds(Serie.class, FAVORITO, FAVORITO_SIM);
+                List idSerTotal = TratamentoBanco.buscarIds(Serie.class);
+
+                WebServerAsync serverAsync = new WebServerAsync(this);
+
+                serverAsync.setOperacao(ATUALIZAR_SERIES);
+                serverAsync.execute(idSerAlterada, idTempAlterada, idEpiAlterada, idFavoritos, idSerTotal);
+
             break;
         }
         return super.onOptionsItemSelected(item);
@@ -156,11 +165,8 @@ public class TelaPrincipal extends ActionBarActivity {
         WebServerAsync serverAsync = new WebServerAsync(this);
 
         serverAsync.setOperacao(ATUALIZAR_WEB_SERVICE);
-        serverAsync.setIdSeries(idSeries);
-        serverAsync.setIdTemporadas(idTemporadas);
-        serverAsync.setIdEpisodios(idEpisodios);
-        serverAsync.setIdFavoritos(idFavoritos);
-        serverAsync.execute();
+        serverAsync.execute(idSeries, idTemporadas, idEpisodios, idFavoritos);
+        onResumeFragments();
 
         super.onBackPressed();
     }
@@ -204,11 +210,11 @@ public class TelaPrincipal extends ActionBarActivity {
             break;
             case CONFIGURAOES:
                 tituloMenu = getString(R.string.lbl_configuracoes);
-                Toast.makeText(this, tituloMenu.toUpperCase(), Toast.LENGTH_SHORT).show();
+                fragment = new TelaConfiguracoes();
                 break;
             case SOBRE:
                 tituloMenu = getString(R.string.lbl_sobre);
-                Toast.makeText(this, tituloMenu .toUpperCase(), Toast.LENGTH_SHORT).show();
+                fragment = new TelaSobre();
             break;
         }
 
@@ -216,6 +222,7 @@ public class TelaPrincipal extends ActionBarActivity {
             fragment = new TelaSeries();
         }
 
+        getSupportActionBar().setTitle(tituloMenu);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
 
@@ -250,39 +257,20 @@ public class TelaPrincipal extends ActionBarActivity {
         }
     }
 
-    private class WebServerAsync extends AsyncTask<Void, Void, Void> {
+    private class WebServerAsync extends AsyncTask<List, Void, Void> {
 
         private int operacao;
         private ProgressDialog pDialog;
         private Context context;
-        private List<Integer> idSeries, idTemporadas, idEpisodios, idFavoritos;
+        private List<Integer> idsSerTotal, idsFavorito, idsEpisodio, idsTemporada, idsSerie;
+
 
         private WebServerAsync(Context context) {
             this.context = context;
-            this.idSeries = new ArrayList<>();
-            this.idTemporadas = new ArrayList<>();
-            this.idEpisodios = new ArrayList<>();
-            this.idFavoritos = new ArrayList<>();
         }
 
         public void setOperacao(int operacao){
             this.operacao = operacao;
-        }
-
-        public void setIdSeries(List<Integer> idSeries) {
-            this.idSeries = idSeries;
-        }
-
-        public void setIdTemporadas(List<Integer> idTemporadas) {
-            this.idTemporadas = idTemporadas;
-        }
-
-        public void setIdEpisodios(List<Integer> idEpisodios) {
-            this.idEpisodios = idEpisodios;
-        }
-
-        public void setIdFavoritos(List<Integer> idFavoritos) {
-            this.idFavoritos = idFavoritos;
         }
 
         @Override
@@ -299,30 +287,40 @@ public class TelaPrincipal extends ActionBarActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(List... listas) {
 
             switch (operacao){
 
                 case BAIXAR_SERIES:
 
-                    Usuario u = (Usuario) TratamentoBanco.buscar(Usuario.class);
+                    boolean logado = ((Usuario) TratamentoBanco.buscar(Usuario.class)).isLogado();
 
-                    if (u.isLogado()){
-                        TratamentoJSON.atualizarSeries();
-                    } else {
+                    if (!logado){
                         TratamentoJSON.baixarDadosWebService();
                         TratamentoBanco.logar();
                     }
+
                 break;
 
                 case ATUALIZAR_WEB_SERVICE:
 
-                    TratamentoJSON.atualizarWebService(idSeries, idTemporadas, idEpisodios, idFavoritos);
-                    TratamentoBanco.atualizarAlterado(false);
+                    idsSerie = listas[0];
+                    idsTemporada = listas[1];
+                    idsEpisodio = listas[2];
+                    idsFavorito = listas[3];
+                    TratamentoJSON.atualizarWebService(idsSerie, idsTemporada, idsEpisodio, idsFavorito);
                 break;
 
                 case ATUALIZAR_SERIES:
-                    TratamentoJSON.atualizarSeries();
+
+                    idsSerie = listas[0];
+                    idsTemporada = listas[1];
+                    idsEpisodio = listas[2];
+                    idsFavorito = listas[3];
+                    idsSerTotal = listas[4];
+                    TratamentoJSON.atualizarWebService(idsSerie, idsTemporada, idsEpisodio, idsFavorito);
+                    TratamentoJSON.atualizarSeries(idsSerTotal);
+
                 break;
             }
 
@@ -334,9 +332,15 @@ public class TelaPrincipal extends ActionBarActivity {
             super.onPostExecute(voids);
 
             if(operacao == BAIXAR_SERIES){
+
                 adaptadorItemMenu = adaptadorItemMenu();
                 lvwMenuLateral.setAdapter(adaptadorItemMenu);
                 exibirTela(menuAtual);
+
+            } else if (operacao == ATUALIZAR_SERIES){
+
+                //onResumeFragments();
+                Toast.makeText(TelaPrincipal.this, "Series atualizadas", Toast.LENGTH_SHORT).show();
             }
 
             if (pDialog.isShowing()) {

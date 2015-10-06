@@ -25,7 +25,8 @@ import static ex_tep.minhasseries.Constantes.NOTA_ALTERADA;
 public class TratamentoBanco {
 
 
-    private TratamentoBanco (){}
+    private TratamentoBanco() {
+    }
 
     public static void criarBanco(Context context) {
 
@@ -50,32 +51,42 @@ public class TratamentoBanco {
             realm.copyToRealmOrUpdate(s);
         }
         realm.commitTransaction();
-
     }
 
-    public static List<Integer> buscarIds(Class cls, String tipoParametro, boolean parametro){
+    public static List<Integer> buscarIds(Class cls){
+        return buscarIds(cls, null, false);
+    }
 
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults results = realm.where(cls).equalTo(tipoParametro, parametro).findAll();
+    public static List<Integer> buscarIds(Class cls, String tipoParametro, boolean parametro) {
+
         List<Integer> ids = new ArrayList<>();
+        Realm realm = Realm.getDefaultInstance();
 
-        if(Serie.class.equals(cls)){
+        RealmResults results;
 
-            for(int i = 0; i < results.size(); i++){
+        if (tipoParametro == null) {
+            results = realm.where(cls).findAll();
+        } else {
+            results = realm.where(cls).equalTo(tipoParametro, parametro).findAll();
+        }
+
+        if (Serie.class.equals(cls)) {
+
+            for (int i = 0; i < results.size(); i++) {
                 Serie s = (Serie) results.get(i);
                 ids.add(s.getId());
             }
 
-        } else if(Temporada.class.equals(cls)){
+        } else if (Temporada.class.equals(cls)) {
 
-            for(int i = 0; i < results.size(); i++){
+            for (int i = 0; i < results.size(); i++) {
                 Temporada t = (Temporada) results.get(i);
                 ids.add(t.getId());
             }
 
-        } else if(Episodio.class.equals(cls)){
+        } else if (Episodio.class.equals(cls)) {
 
-            for(int i = 0; i < results.size(); i++){
+            for (int i = 0; i < results.size(); i++) {
                 Episodio e = (Episodio) results.get(i);
                 ids.add(e.getId());
             }
@@ -83,17 +94,17 @@ public class TratamentoBanco {
         return ids;
     }
 
-    public static RealmObject buscar(Class cls){
+    public static RealmObject buscar(Class cls) {
         return buscar(cls, -1);
     }
 
     public static RealmObject buscar(Class cls, int id) {
 
-        RealmObject realmObject ;
+        RealmObject realmObject;
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
-        if(Usuario.class.equals(cls)) {
+        if (Usuario.class.equals(cls)) {
 
             if (realm.where(cls).findAll().size() == 0) {
 
@@ -104,9 +115,9 @@ public class TratamentoBanco {
                 realmObject = realm.where(cls).findFirst();
             }
 
-        } else{
+        } else {
 
-            if (id == -1){
+            if (id == -1) {
                 realmObject = realm.where(cls).findFirst();
             } else {
                 realmObject = realm.where(cls).equalTo(ID, id).findFirst();
@@ -181,7 +192,7 @@ public class TratamentoBanco {
         return cont;
     }
 
-    public static void alterarNota(float nota, int epiId, int tempId, int serieId){
+    public static void alterarNota(float nota, int epiId, int tempId, int serieId) {
 
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
@@ -200,18 +211,18 @@ public class TratamentoBanco {
         serie.setNota(calcularMedia(serie.getTemporadas()));
         serie.setNotaAlterada(true);
         realm.copyToRealmOrUpdate(serie);
-        
+
         realm.commitTransaction();
     }
 
-    public static void atualizarAlterado(boolean flag){
+    public static void atualizarAlterado(boolean flag) {
 
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
         List<Episodio> episodios = realm.where(Episodio.class).equalTo(NOTA_ALTERADA, !flag).findAll();
 
-        for(int i = 0; i < episodios.size(); i++){
+        for (int i = 0; i < episodios.size(); i++) {
 
             Episodio e = episodios.get(i);
             e.setNotaAlterada(flag);
@@ -219,14 +230,14 @@ public class TratamentoBanco {
         }
 
         List<Temporada> temporadas = realm.where(Temporada.class).equalTo(NOTA_ALTERADA, !flag).findAll();
-        for(int i = 0; i < temporadas.size(); i++){
+        for (int i = 0; i < temporadas.size(); i++) {
             Temporada t = temporadas.get(i);
             t.setNotaAlterada(flag);
             realm.copyToRealmOrUpdate(t);
         }
 
         List<Serie> series = realm.where(Serie.class).equalTo(NOTA_ALTERADA, !flag).findAll();
-        for(int i = 0; i < series.size(); i++){
+        for (int i = 0; i < series.size(); i++) {
             Serie s = series.get(i);
             s.setNotaAlterada(flag);
             realm.copyToRealmOrUpdate(s);
@@ -239,16 +250,16 @@ public class TratamentoBanco {
         return buscarSeries(flag).size();
     }
 
-    private static float calcularMedia(RealmList lista){
+    private static float calcularMedia(RealmList lista) {
 
         float nota = 0;
 
-        if (lista.size() > 0){
+        if (lista.size() > 0) {
 
-            for(int i = 0; i < lista.size(); i++){
+            for (int i = 0; i < lista.size(); i++) {
                 RealmObject obj = lista.get(i);
 
-                if(obj instanceof Episodio){
+                if (obj instanceof Episodio) {
                     nota += ((Episodio) obj).getNota();
                 } else if (obj instanceof Temporada) {
                     nota += ((Temporada) obj).getNota();

@@ -14,7 +14,7 @@ public final class Constantes {
     public static final int SOBRE = 4;
 
     //URL para acessar o Web Service
-    public static final String URL_WEBSERVICE = "http://192.168.0.100:8080/WebServer/webresources/";
+    public static final String URL_WEBSERVICE = "http://192.168.0.103:8080/WebServer/webresources/";
     //public static final String URL_WEBSERVICE = "http://10.13.157.161:8080/WebServer/webresources/";
     //public static final String URL_WEBSERVICE = "http://10.0.2.2:8080/WebServer/webresources/";
     public static final String URL_USUARIO = "tabelas.tbusuario/";

@@ -84,7 +84,9 @@ public class TelaSeries extends Fragment {
 
     @Override
     public void onResume() {
-        lvwSeries.setAdapter(new AdaptadorListaSeries(this.getActivity(), series));
+
         super.onResume();
+        series = TratamentoBanco.buscarSeries(FAVORITO_NAO);
+        lvwSeries.setAdapter(new AdaptadorListaSeries(this.getActivity(), series));
     }
 }
