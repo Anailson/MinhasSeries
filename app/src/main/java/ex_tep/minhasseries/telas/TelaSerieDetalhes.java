@@ -19,7 +19,7 @@ public class TelaSerieDetalhes extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalhes_serie);
+        setContentView(R.layout.activity_serie_detalhes);
 
         int id = getIntent().getIntExtra(SER_ID, -1);
         Serie serie = (Serie) TratamentoBanco.buscar(Serie.class, id);

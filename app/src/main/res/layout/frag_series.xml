@@ -5,20 +5,44 @@
     android:layout_height="match_parent"
     tools:context="ex_tep.minhasseries.TelaPopular">
 
-    <ListView
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/lvw_series"
-        android:padding="5dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/btn_adiconar_series" />
+        android:id="@+id/linearLayout2">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@mipmap/ic_ordenar"
+            android:id="@+id/imgIconSeries"
+            android:padding="5dp" />
+
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spnSeries"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lvwSeries"
+        android:padding="5dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/btnAdiconarSeries"
+        android:layout_below="@+id/linearLayout2" />
 
     <Button
-        android:id="@+id/btn_adiconar_series"
+        android:id="@+id/btnAdiconarSeries"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_adicionar_serie"

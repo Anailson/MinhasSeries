@@ -5,24 +5,47 @@
     android:layout_height="match_parent"
     tools:context="ex_tep.minhasseries.TelaFavorito">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@mipmap/ic_ordenar"
+            android:id="@+id/imgIconOrdenar"
+            android:padding="5dp" />
+
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spnFavoritos"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/lvw_favorito"
+        android:id="@+id/lvwFavorito"
         android:padding="5dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/btn_remover_serie" />
+        android:layout_above="@+id/btnRemoverSerie"
+        android:layout_below="@+id/linearLayout" />
 
     <Button
-        android:id="@+id/btn_remover_serie"
+        android:id="@+id/btnRemoverSerie"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_remover_serie"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

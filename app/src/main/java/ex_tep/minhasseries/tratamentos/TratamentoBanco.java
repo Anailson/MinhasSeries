@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
+import ex_tep.minhasseries.entidades.Configuracoes;
 import ex_tep.minhasseries.entidades.Episodio;
 import ex_tep.minhasseries.entidades.Serie;
 import ex_tep.minhasseries.entidades.Temporada;
@@ -25,13 +26,20 @@ import static ex_tep.minhasseries.Constantes.NOTA_ALTERADA;
 public class TratamentoBanco {
 
 
-    private TratamentoBanco() {
-    }
+    private TratamentoBanco() {}
 
     public static void criarBanco(Context context) {
 
         RealmConfiguration configuration = new RealmConfiguration.Builder(context).build();
         Realm.setDefaultConfiguration(configuration);
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+
+        realm.copyToRealmOrUpdate(new Usuario());
+        realm.copyToRealm(new Configuracoes());
+        realm.commitTransaction();
     }
 
     public static void logar() {
@@ -61,7 +69,6 @@ public class TratamentoBanco {
 
         List<Integer> ids = new ArrayList<>();
         Realm realm = Realm.getDefaultInstance();
-
         RealmResults results;
 
         if (tipoParametro == null) {
@@ -102,42 +109,30 @@ public class TratamentoBanco {
 
         RealmObject realmObject;
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
 
-        if (Usuario.class.equals(cls)) {
-
-            if (realm.where(cls).findAll().size() == 0) {
-
-                realmObject = realm.createObject(cls);
-                realm.copyToRealmOrUpdate(realmObject);
-
-            } else {
-                realmObject = realm.where(cls).findFirst();
-            }
-
+        if (id == -1) {
+            realmObject = realm.where(cls).findFirst();
         } else {
-
-            if (id == -1) {
-                realmObject = realm.where(cls).findFirst();
-            } else {
-                realmObject = realm.where(cls).equalTo(ID, id).findFirst();
-            }
+            realmObject = realm.where(cls).equalTo(ID, id).findFirst();
         }
 
-        realm.commitTransaction();
         return realmObject;
-    }
-
-    public static RealmResults<Serie> buscarSeries() {
-
-        Realm realm = Realm.getDefaultInstance();
-        return realm.where(Serie.class).findAll();
     }
 
     public static RealmResults<Serie> buscarSeries(boolean flag) {
 
+        return buscarSeries(flag, null);
+    }
+
+    public static RealmResults<Serie> buscarSeries(boolean flag, String ordenacao){
+
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(Serie.class).equalTo(FAVORITO, flag).findAll();
+
+        if(ordenacao == null){
+            return realm.where(Serie.class).equalTo(FAVORITO, flag).findAll();
+        }
+
+        return realm.where(Serie.class).equalTo(FAVORITO, flag).findAllSorted(ordenacao);
     }
 
     public static Usuario alterar(Usuario u) {
@@ -269,5 +264,35 @@ public class TratamentoBanco {
         }
 
         return nota;
+    }
+
+    public static void salvarOrdenacao(boolean flag, int ordenacao) {
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        Configuracoes config = realm.where(Configuracoes.class).findFirst();
+        if(flag){
+            config.setOrdenacaoFav(ordenacao);
+        } else {
+            config.setOrdenacaoSer(ordenacao);
+        }
+
+        realm.copyToRealm(config);
+        realm.commitTransaction();
+    }
+
+    public static int buscarOrdenacao(boolean flag){
+        int ordenacao;
+        Realm realm = Realm.getDefaultInstance();
+
+        Configuracoes config = realm.where(Configuracoes.class).findFirst();
+
+        if(flag){
+            ordenacao = config.getOrdenacaoFav();
+        } else {
+            ordenacao = config.getOrdenacaoSer();
+        }
+        return ordenacao;
     }
 }

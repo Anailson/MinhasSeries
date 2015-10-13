@@ -29,7 +29,7 @@ public class TelaEpisodioDetalhes extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalhes_episodio);
+        setContentView(R.layout.activity_episodio_detalhes);
 
         Intent intent = getIntent();
         epiId = intent.getIntExtra(EPISODIO + ID, -1);

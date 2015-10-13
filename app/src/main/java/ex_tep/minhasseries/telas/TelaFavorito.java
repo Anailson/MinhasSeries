@@ -3,15 +3,16 @@ package ex_tep.minhasseries.telas;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import ex_tep.minhasseries.R;
@@ -20,65 +21,44 @@ import ex_tep.minhasseries.entidades.Serie;
 import ex_tep.minhasseries.tratamentos.TratamentoBanco;
 import io.realm.RealmResults;
 
+import static ex_tep.minhasseries.Constantes.ANO;
 import static ex_tep.minhasseries.Constantes.FAVORITO_NAO;
 import static ex_tep.minhasseries.Constantes.FAVORITO_SIM;
 import static ex_tep.minhasseries.Constantes.ID;
+import static ex_tep.minhasseries.Constantes.NOTA;
+import static ex_tep.minhasseries.Constantes.ORD_LANCAMENTO;
+import static ex_tep.minhasseries.Constantes.ORD_NOTA;
+import static ex_tep.minhasseries.Constantes.ORD_TITULO;
 import static ex_tep.minhasseries.Constantes.SER_ID;
+import static ex_tep.minhasseries.Constantes.TITULO;
 
 public class TelaFavorito extends Fragment {
 
     private RealmResults<Serie> series;
+    private Spinner spnFavorito;
     private ListView lvwFavorito;
     private Button btnRemoverFavorito;
 
     public TelaFavorito() {}
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View viewFavoritos = inflater.inflate(R.layout.frag_favorito, container, false);
 
-        series = TratamentoBanco.buscarSeries(FAVORITO_SIM);
-        lvwFavorito = (ListView) viewFavoritos.findViewById(R.id.lvw_favorito);
-        btnRemoverFavorito = (Button) viewFavoritos.findViewById(R.id.btn_remover_serie);
+        spnFavorito = (Spinner) viewFavoritos.findViewById(R.id.spnFavoritos);
+        lvwFavorito = (ListView) viewFavoritos.findViewById(R.id.lvwFavorito);
+        btnRemoverFavorito = (Button) viewFavoritos.findViewById(R.id.btnRemoverSerie);
 
-        lvwFavorito.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (!view.isLongClickable()) {
+        spnFavorito.setAdapter(adaptadorSpinner());
+        spnFavorito.setSelection(TratamentoBanco.buscarOrdenacao(FAVORITO_SIM));
 
-                    Intent intent = new Intent(getActivity(), TelaFavoritoDetalhes.class);
-                    intent.putExtra(ID, series.get(position).getId());
-                    startActivity(intent);
-                }
-            }
-        });
-
-        btnRemoverFavorito.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                int cont = TratamentoBanco.atualizarFavoritos(FAVORITO_NAO);
-                String mensagem;
-
-                switch(cont){
-                    case 0:
-                        mensagem = getString(R.string.msg_excluir_erro);
-                        break;
-                    case 1:
-                        mensagem = getString(R.string.msg_excluir_unico_fav_sucesso);
-                        break;
-                    case 2:
-                        mensagem = getString(R.string.msg_excluir_multi_fav_sucesso);
-                        break;
-                    default:
-                        mensagem = getString(R.string.msg_excluir_erro_inesperado);
-                        break;
-                }
-
-                Toast.makeText(getActivity(), mensagem, Toast.LENGTH_SHORT).show();
-                onResume();
-            }
-        });
+        btnRemoverFavorito.setOnClickListener(new BtnRemoverFav());
+        lvwFavorito.setOnItemClickListener(new LvwFavorito());
+        spnFavorito.setOnItemSelectedListener(new SpnFavorito());
 
         registerForContextMenu(lvwFavorito);
         return viewFavoritos;
@@ -87,8 +67,21 @@ public class TelaFavorito extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("TELA_FAVORITOS", "ON_RESUME()");
-        series = TratamentoBanco.buscarSeries(FAVORITO_SIM);
+
+        String ordenacao = null;
+        switch(TratamentoBanco.buscarOrdenacao(FAVORITO_SIM)){
+            case ORD_TITULO:
+                ordenacao = TITULO;
+            break;
+            case ORD_NOTA:
+                ordenacao = NOTA;
+            break;
+            case ORD_LANCAMENTO:
+                ordenacao = ANO;
+            break;
+        }
+
+        series = TratamentoBanco.buscarSeries(FAVORITO_SIM, ordenacao);
         lvwFavorito.setAdapter(new AdaptadorListaFavorito(this.getActivity(), series));
     }
 
@@ -125,5 +118,66 @@ public class TelaFavorito extends Fragment {
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    private ArrayAdapter adaptadorSpinner(){
+        return ArrayAdapter.createFromResource(this.getActivity(), R.array.spn_ordenacao, android.R.layout.simple_spinner_item);
+    }
+
+    private class BtnRemoverFav implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+
+            int cont = TratamentoBanco.atualizarFavoritos(FAVORITO_NAO);
+            String mensagem;
+
+            switch(cont){
+                case 0:
+                    mensagem = getString(R.string.msg_excluir_erro);
+                    break;
+                case 1:
+                    mensagem = getString(R.string.msg_excluir_unico_fav_sucesso);
+                    break;
+                case 2:
+                    mensagem = getString(R.string.msg_excluir_multi_fav_sucesso);
+                    break;
+                default:
+                    mensagem = getString(R.string.msg_excluir_erro_inesperado);
+                    break;
+            }
+
+            Toast.makeText(getActivity(), mensagem, Toast.LENGTH_SHORT).show();
+            //TODO: como chamar o onResume() da Activity?
+            onResume();
+        }
+    }
+
+    private class LvwFavorito implements AdapterView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (!view.isLongClickable()) {
+
+                Intent intent = new Intent(getActivity(), TelaFavoritoDetalhes.class);
+                intent.putExtra(ID, series.get(position).getId());
+                startActivity(intent);
+            }
+        }
+    }
+
+    private class SpnFavorito implements AdapterView.OnItemSelectedListener{
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            TratamentoBanco.salvarOrdenacao(FAVORITO_SIM, position);
+            onResume();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            Toast.makeText(TelaFavorito.this.getActivity(), "onNothingSelected()", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -1,10 +1,23 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".TelaPrincipal">
 
     <item
-        android:id="@+id/menuAtualizar"
-        android:title="@string/menu_atualizar"
-        android:orderInCategory="2"/>
+        android:id="@+id/menu_pesquisar"
+        android:icon="@mipmap/ic_pesquisar"
+        android:title=""
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_atualizar"
+        android:icon="@mipmap/ic_atualizar"
+        android:title=""
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_feedback"
+        android:title="@string/menu_feedback"
+        android:orderInCategory="3"/>
 </menu>

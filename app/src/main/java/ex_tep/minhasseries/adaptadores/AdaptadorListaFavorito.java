@@ -35,11 +35,11 @@ public class AdaptadorListaFavorito extends ArrayAdapter<Serie>  {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.lista_lancamento, parent, false);
+        View view = inflater.inflate(R.layout.lista_favorito, parent, false);
 
-        lblTituloFavorito = (TextView) view.findViewById(R.id.lbl_titulo_lancamento);
-        lblNotaFavorito = (TextView) view.findViewById(R.id.lbl_nota_lancamento);
-        chbFavorito = (CheckBox) view.findViewById(R.id.chb_lancamento);
+        lblTituloFavorito = (TextView) view.findViewById(R.id.lbl_titulo_favorito);
+        lblNotaFavorito = (TextView) view.findViewById(R.id.lbl_nota_favorito);
+        chbFavorito = (CheckBox) view.findViewById(R.id.chb_favorito);
 
         lblTituloFavorito.setText(series.get(position).getTitulo());
         lblNotaFavorito.setText("Nota: " + String.format("%.1f", series.get(position).getNota()));

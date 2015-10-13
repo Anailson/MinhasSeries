@@ -35,7 +35,7 @@ public class TelaFavoritoDetalhes extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_temporadas);
+        setContentView(R.layout.activity_favoito_detalhes);
 
         Intent intent = getIntent();
         id = intent.getIntExtra(ID, -1);

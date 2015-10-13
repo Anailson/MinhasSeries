@@ -37,9 +37,9 @@ public class AdaptadorListaSeries extends ArrayAdapter<Serie> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.lista_series, parent, false);
 
-        lblTituloSeries = (TextView) view.findViewById(R.id.lbl_titulo_series);
-        lblNotaSeries = (TextView) view.findViewById(R.id.lbl_nota_series);
-        chbSeries = (CheckBox) view.findViewById(R.id.chb_series);
+        lblTituloSeries = (TextView) view.findViewById(R.id.lbl_titulo_serie);
+        lblNotaSeries = (TextView) view.findViewById(R.id.lbl_nota_serie);
+        chbSeries = (CheckBox) view.findViewById(R.id.chb_serie);
 
         lblTituloSeries.setText(series.get(position).getTitulo());
         lblNotaSeries.setText("Nota: " + series.get(position).getNota());

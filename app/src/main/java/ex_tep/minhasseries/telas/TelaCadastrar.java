@@ -21,7 +21,6 @@ import static ex_tep.minhasseries.Constantes.LOGIN_FALHA;
 import static ex_tep.minhasseries.Constantes.LOGIN_SUCESSO;
 import static ex_tep.minhasseries.Constantes.SEM_CONEXAO;
 
-
 public class TelaCadastrar extends ActionBarActivity implements View.OnClickListener {
 
     private EditText edtNome, edtLogin, edtSenha;
@@ -45,8 +44,7 @@ public class TelaCadastrar extends ActionBarActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-
-        //TODO: Se registron nulo?
+        //TODO: Validar as entradas
         String nome = edtNome.getText().toString();
         String login = edtLogin.getText().toString();
         String senha = edtSenha.getText().toString();

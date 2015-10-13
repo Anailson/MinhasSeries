@@ -67,12 +67,9 @@ public class TelaPrincipal extends ActionBarActivity {
     private DrawerLayout drawerLayout;
     private ListView lvwMenuLateral;
     private ActionBarDrawerToggle actionBarDrawer;
-    private String[] txtMenuLateral;
-    private TypedArray iconeMenuLateral;
-    private ArrayList<ItemMenu> itensMenus;
     private AdaptadorItemMenu adaptadorItemMenu;
 
-    private String tituloPrincipal, tituloMenu, quantSeries, quantFavoritos;
+    private String tituloPrincipal, tituloMenu;
     private int menuAtual;
 
     @Override
@@ -104,6 +101,8 @@ public class TelaPrincipal extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        lvwMenuLateral.setAdapter(adaptadorItemMenu = adaptadorItemMenu());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         exibirTela(menuAtual);
@@ -111,9 +110,9 @@ public class TelaPrincipal extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.menu_principal, menu);
-        super.onCreateOptionsMenu(menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -124,19 +123,14 @@ public class TelaPrincipal extends ActionBarActivity {
         }
 
         switch (item.getItemId()) {
-            case R.id.menuAtualizar:
-
-                List idSerAlterada = TratamentoBanco.buscarIds(Serie.class, NOTA_ALTERADA, true);
-                List idTempAlterada= TratamentoBanco.buscarIds(Temporada.class, NOTA_ALTERADA, true);
-                List idEpiAlterada= TratamentoBanco.buscarIds(Episodio.class, NOTA_ALTERADA, true);
-                List idFavoritos = TratamentoBanco.buscarIds(Serie.class, FAVORITO, FAVORITO_SIM);
-                List idSerTotal = TratamentoBanco.buscarIds(Serie.class);
-
-                WebServerAsync serverAsync = new WebServerAsync(this);
-
-                serverAsync.setOperacao(ATUALIZAR_SERIES);
-                serverAsync.execute(idSerAlterada, idTempAlterada, idEpiAlterada, idFavoritos, idSerTotal);
-
+            case R.id.menu_atualizar:
+                atualizarSeries();
+            break;
+            case R.id.menu_pesquisar:
+                Toast.makeText(this,  "pesquisar clickado", Toast.LENGTH_SHORT).show();
+            break;
+            case R.id.menu_feedback:
+                Toast.makeText(this, this.getString(R.string.menu_feedback) + " clickado", Toast.LENGTH_SHORT).show();
             break;
         }
         return super.onOptionsItemSelected(item);
@@ -157,32 +151,22 @@ public class TelaPrincipal extends ActionBarActivity {
     @Override
     public void onBackPressed() {
 
-        List idSeries = TratamentoBanco.buscarIds(Serie.class, NOTA_ALTERADA, true);
-        List idTemporadas = TratamentoBanco.buscarIds(Temporada.class, NOTA_ALTERADA, true);
-        List idEpisodios = TratamentoBanco.buscarIds(Episodio.class, NOTA_ALTERADA, true);
-        List idFavoritos = TratamentoBanco.buscarIds(Serie.class, FAVORITO, FAVORITO_SIM);
-
-        WebServerAsync serverAsync = new WebServerAsync(this);
-
-        serverAsync.setOperacao(ATUALIZAR_WEB_SERVICE);
-        serverAsync.execute(idSeries, idTemporadas, idEpisodios, idFavoritos);
-        onResumeFragments();
-
+        atualizarWebService();
         super.onBackPressed();
     }
 
     private AdaptadorItemMenu adaptadorItemMenu(){
 
-        txtMenuLateral = getResources().getStringArray(R.array.txt_menu_lateral);
-        iconeMenuLateral = getResources().obtainTypedArray(R.array.img_menu_lateral);
+        String [] txtMenuLateral = getResources().getStringArray(R.array.txt_menu_lateral);
+        TypedArray iconeMenuLateral = getResources().obtainTypedArray(R.array.img_menu_lateral);
 
-        quantSeries = TratamentoBanco.totalSeries(FAVORITO_NAO) + "";
-        quantFavoritos = TratamentoBanco.totalSeries(FAVORITO_SIM) + "";
+        String quantSeries = TratamentoBanco.totalSeries(FAVORITO_NAO) + "";
+        String quantFavoritos = TratamentoBanco.totalSeries(FAVORITO_SIM) + "";
 
-        itensMenus = new ArrayList<>();
+        ArrayList<ItemMenu> itensMenus = new ArrayList<>();
         itensMenus.add(new ItemMenu(txtMenuLateral[PERFIL], iconeMenuLateral.getResourceId(PERFIL, -1)));
-        itensMenus.add(new ItemMenu(txtMenuLateral[SERIES], iconeMenuLateral.getResourceId(SERIES, -1),true, quantSeries));
-        itensMenus.add(new ItemMenu(txtMenuLateral[FAVORITOS], iconeMenuLateral.getResourceId(FAVORITOS, -1),true, quantFavoritos));
+        itensMenus.add(new ItemMenu(txtMenuLateral[SERIES], iconeMenuLateral.getResourceId(SERIES, -1), true, quantSeries));
+        itensMenus.add(new ItemMenu(txtMenuLateral[FAVORITOS], iconeMenuLateral.getResourceId(FAVORITOS, -1), true, quantFavoritos));
         itensMenus.add(new ItemMenu(txtMenuLateral[CONFIGURAOES], iconeMenuLateral.getResourceId(CONFIGURAOES, -1)));
         itensMenus.add(new ItemMenu(txtMenuLateral[SOBRE], iconeMenuLateral.getResourceId(SOBRE, -1)));
         iconeMenuLateral.recycle();
@@ -231,6 +215,32 @@ public class TelaPrincipal extends ActionBarActivity {
         drawerLayout.closeDrawer(lvwMenuLateral);
     }
 
+    private void atualizarWebService(){
+
+        List idSeries = TratamentoBanco.buscarIds(Serie.class, NOTA_ALTERADA, true);
+        List idTemporadas = TratamentoBanco.buscarIds(Temporada.class, NOTA_ALTERADA, true);
+        List idEpisodios = TratamentoBanco.buscarIds(Episodio.class, NOTA_ALTERADA, true);
+        List idFavoritos = TratamentoBanco.buscarIds(Serie.class, FAVORITO, FAVORITO_SIM);
+
+        WebServerAsync serverAsync = new WebServerAsync(this);
+
+        serverAsync.setOperacao(ATUALIZAR_WEB_SERVICE);
+        serverAsync.execute(idSeries, idTemporadas, idEpisodios, idFavoritos);
+        onResumeFragments();
+    }
+
+    private void atualizarSeries(){
+        List idSerAlterada = TratamentoBanco.buscarIds(Serie.class, NOTA_ALTERADA, true);
+        List idTempAlterada= TratamentoBanco.buscarIds(Temporada.class, NOTA_ALTERADA, true);
+        List idEpiAlterada= TratamentoBanco.buscarIds(Episodio.class, NOTA_ALTERADA, true);
+        List idFavoritos = TratamentoBanco.buscarIds(Serie.class, FAVORITO, FAVORITO_SIM);
+        List idSerTotal = TratamentoBanco.buscarIds(Serie.class);
+
+        WebServerAsync serverAsync = new WebServerAsync(this);
+        serverAsync.setOperacao(ATUALIZAR_SERIES);
+        serverAsync.execute(idSerAlterada, idTempAlterada, idEpiAlterada, idFavoritos, idSerTotal);
+    }
+
     private class SlideMenuClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -246,7 +256,6 @@ public class TelaPrincipal extends ActionBarActivity {
 
         public void onDrawerOpened(View drawerView) {
 
-            adaptadorItemMenu = adaptadorItemMenu();
             getSupportActionBar().setTitle(tituloPrincipal);
             invalidateOptionsMenu();
         }
@@ -257,7 +266,7 @@ public class TelaPrincipal extends ActionBarActivity {
         }
     }
 
-    private class WebServerAsync extends AsyncTask<List, Void, Void> {
+    private class WebServerAsync extends AsyncTask<List<Integer>, Void, Void> {
 
         private int operacao;
         private ProgressDialog pDialog;
@@ -277,50 +286,54 @@ public class TelaPrincipal extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            pDialog = new ProgressDialog(context);
+            String mensagem = "";
+            if(operacao == BAIXAR_SERIES ) {
+                mensagem = TelaPrincipal.this.getString(R.string.msg_baixar_serie_sucesso);
+            } else if (operacao == ATUALIZAR_SERIES){
+                mensagem = TelaPrincipal.this.getString(R.string.msg_atualizar_serie_sucesso);
+            }
 
-            if(operacao == BAIXAR_SERIES) {
-                pDialog.setMessage(TelaPrincipal.this.getString(R.string.msg_baixar_serie_sucesso));
-                pDialog.setCancelable(false);
+            pDialog = new ProgressDialog(context);
+            pDialog.setMessage(mensagem);
+            pDialog.setCancelable(false);
+
+            if(operacao != ATUALIZAR_WEB_SERVICE){
                 pDialog.show();
             }
         }
 
         @Override
-        protected Void doInBackground(List... listas) {
+        protected final Void doInBackground(List<Integer>... listas) {
 
             switch (operacao){
 
                 case BAIXAR_SERIES:
 
                     boolean logado = ((Usuario) TratamentoBanco.buscar(Usuario.class)).isLogado();
-
                     if (!logado){
                         TratamentoJSON.baixarDadosWebService();
                         TratamentoBanco.logar();
                     }
-
                 break;
 
                 case ATUALIZAR_WEB_SERVICE:
-
                     idsSerie = listas[0];
                     idsTemporada = listas[1];
                     idsEpisodio = listas[2];
                     idsFavorito = listas[3];
+
                     TratamentoJSON.atualizarWebService(idsSerie, idsTemporada, idsEpisodio, idsFavorito);
                 break;
 
                 case ATUALIZAR_SERIES:
-
                     idsSerie = listas[0];
                     idsTemporada = listas[1];
                     idsEpisodio = listas[2];
                     idsFavorito = listas[3];
                     idsSerTotal = listas[4];
+
                     TratamentoJSON.atualizarWebService(idsSerie, idsTemporada, idsEpisodio, idsFavorito);
                     TratamentoJSON.atualizarSeries(idsSerTotal);
-
                 break;
             }
 
@@ -339,7 +352,6 @@ public class TelaPrincipal extends ActionBarActivity {
 
             } else if (operacao == ATUALIZAR_SERIES){
 
-                //onResumeFragments();
                 Toast.makeText(TelaPrincipal.this, "Series atualizadas", Toast.LENGTH_SHORT).show();
             }
 

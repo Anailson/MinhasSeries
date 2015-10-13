@@ -6,6 +6,7 @@
     <string name="title_detalhes_serie">Detalhes da série</string>
     <string name="title_detalhes_temporada">Detalhes das temporadas</string>
     <string name="title_detalhes_episodio">Detalhes do episódio</string>
+    <string name="title_cadastrar">Cadastrar</string>
 
     <!-- Labels / TextView -->
     <string name="lbl_null">- - - -</string>
@@ -14,9 +15,6 @@
     <string name="lbl_favorito">Favoritos</string>
     <string name="lbl_configuracoes">Configurações</string>
     <string name="lbl_sobre">Sobre</string>
-    <!--<string name="lbl_popular">Mais populares</string>
-    <string name="lbl_lancamento">Lançamentos</string>-->
-    <string name="lbl_pesquisa">Pesquisar</string>
     <string name="lbl_resumo">Resumo:</string>
     <string name="lbl_ano_lancamento">Lançamento:</string>
     <string name="lbl_emissora">Emissora:</string>
@@ -36,7 +34,19 @@
     <string name="btn_sair">Sair</string>
 
     <!-- Menus -->
-    <string name="menu_atualizar">Atualizar</string>
+    <string name="menu_feedback">Enviar comentarios</string>
+
+    <!-- Tipos de ordenação para as séries -->
+    <string name="ord_titulo">Titulo da série</string>
+    <string name="ord_avaliacao">Avaliação</string>
+    <string name="ord_ano">Ano de lançamento</string>
+
+    <!-- Spinner de ordenação -->
+    <string-array name="spn_ordenacao">
+        <item>@string/ord_titulo</item>
+        <item>@string/ord_avaliacao</item>
+        <item>@string/ord_ano</item>
+    </string-array>
 
     <!-- Menu lateral (Titulo) -->
     <string-array name="txt_menu_lateral">
@@ -63,7 +73,6 @@
     <string name="hint_cadastrar_login">Digite seu login</string>
     <string name="hint_cadastrar_senha">Digite sua senha</string>
 
-
     <!-- Mensagens ao usuario (Toast etc) -->
     <string name="msg_inserir_unico_fav_sucesso">Já adicionamos sua série na lista de favoritos.</string>
     <string name="msg_inserir_multi_fav_sucesso">Já adicionamos suas séries na lista de favoritos.</string>
@@ -75,20 +84,12 @@
     <string name="msg_excluir_erro">Humm... Você marcou alguma série para ser removida?</string>
     <string name="msg_excluir_erro_inesperado">msg_excluir_erro_inesperado.</string>
 
-    <string name="msg_baixar_serie_sucesso">Estamos atualizando as informações das séries...</string>
-    <string name="msg_efeturar_login_sucesso">Vejamos se seus dados informados conferem...</string>
+    <string name="msg_baixar_serie_sucesso">Estamos baixando as informações das séries...</string>
+    <string name="msg_atualizar_serie_sucesso">A lista de séries está sendo atualizadas.</string>
 
     <string name="msg_login_sucesso">Você acabou de se conectar.</string>
     <string name="msg_login_falha">Bem... os dados informados parecem estar incorretos.</string>
     <string name="msg_sem_conexao">Poderia verificar sua conexão com a Internet? Parece que ela não está bem...</string>
 
-    <string name="title_activity_tela_configuracoes">TelaConfiguracoes</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_tela_cadastrar">Cadastrar</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
 </resources>
+

@@ -18,7 +18,6 @@ import ex_tep.minhasseries.entidades.Temporada;
  */
 public class AdaptadorListaFavoritoDetalhes extends BaseExpandableListAdapter {
 
-    //TODO: E essas constantes...
     private static final String NOTA_TEMP = "Nota da temporada: ";
     private static final String NOTA_EPI  = "Nota do episodio: ";
     private static final String ANO_LANCAMENTO = "Ano de lancamento: ";
